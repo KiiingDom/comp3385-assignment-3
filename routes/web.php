@@ -18,10 +18,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/about', function () {
-    return view('about');
-});
+Route::get('/dashboard', function () {
+    // Only authenticated users can access this route
+    return view('dashboard');
+})->middleware('auth')->name('dashboard');
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
 // Create additional Routes below
+
+Route::get('/login', [AuthController::class, 'create'])->name('login');
+Route::post('/login', [AuthController::class, 'store']);
