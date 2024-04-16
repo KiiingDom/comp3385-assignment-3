@@ -2,33 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
 
 class AuthController extends Controller
 {
-    public function create()
-{
-    return view('auth.login');
-}
+    public function create() {
+        return view('login_form');
+    }
+    
+    public function store(Request $request): RedirectResponse {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
+        $credentials = $request->only('email', 'password');
 
-    public function store(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+        if (!Auth::attempt($credentials)) {
+            return redirect('/login')->with('error', 'Invalid credentials. Check the email address and password entered.');
+        }
 
-    $credentials = $request->only('email', 'password');
+        return redirect('/dashboard')->with('success', 'Login successful');
 
-    if (Auth::attempt($credentials)) {
-        // Authentication passed...
-        return redirect('/dashboard')->with('success', 'Login successful.');
     }
 
-    return back()->withInput()->withErrors(['email' => 'Invalid credentials. Check the email address and password entered.']);
-}
+    public function logout(Request $request) : RedirectResponse {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
+        return redirect('/')->with('success', 'User successfully logged out');
+    }
 }
