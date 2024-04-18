@@ -11,12 +11,11 @@ use App\Http\Controllers\ClientController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider and will be assigned to the
+| "web" middleware group, which includes middleware that handles CSRF
+| protection, web authentication, and more. Now create something great!
 |
 */
-
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,5 +33,6 @@ Route::get('/login', [AuthController::class, 'create'])->name('login');
 Route::post('/login', [AuthController::class, 'store']);
 
 Route::get('/clients/add', [ClientController::class, 'create'])->middleware('auth');
-Route::post('/clients', [ClientController::class, 'send'])->middleware('auth');
+Route::post('/clients', [ClientController::class, 'store'])->middleware('auth');
+
 Route::get('/logout', [AuthController::class, 'logout']);

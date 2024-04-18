@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    <form action="/clients" enctype="multipart/form-data" method="post">
+    <form action="/clients" enctype="multipart/form-data" method="POST">
         @csrf
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <div class="mb-3">

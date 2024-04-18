@@ -8,31 +8,33 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    public function create() {
-        return view('/client_form');
+    public function create()
+    {
+        return view('client_form');
     }
 
-    public function send(Request $request) : RedirectResponse {
-        $validate = $request->validate([
-            'name' => 'string|required',
-            'email' => 'string|email|required',
-            'phone' => 'string|required|size:12',
-            'address' => 'string|max:75|required|',
-            'logo' => 'required|file|image|max:2048'
+    public function store(Request $request): RedirectResponse
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|string|email',
+            'phone' => 'required|string|size:12',
+            'address' => 'required|string|max:75',
+            'logo' => 'required|image|max:2048',
         ]);
 
         $file = $request->file('logo');
         $filename = time() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('company_logo', $filename, 'public');
+        $path = $file->storeAs('public/company_logo', $filename);
 
         $client = new Client();
-        $client->name = $request->input('name');
-        $client->email = $request->input('email');
-        $client->telephone = $request->input('phone');
-        $client->address = $request->input('address');
-        $client->company_logo = asset('storage/' . $path);
+        $client->name = $validatedData['name'];
+        $client->email = $validatedData['email'];
+        $client->telephone = $validatedData['phone'];
+        $client->address = $validatedData['address'];
+        $client->company_logo = asset('storage/company_logo/' . $filename);
         $client->save();
 
-        return redirect('/dashboard')->with('success', 'Task was successful!');
+        return redirect('/dashboard')->with('success', 'Client added successfully!');
     }
 }
